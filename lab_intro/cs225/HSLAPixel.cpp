@@ -21,16 +21,44 @@ namespace cs225 {
     }
     // opaque pixel with given hue, saturation and luminance
     HSLAPixel::HSLAPixel(double hue, double saturation, double luminance) {
-        h = hue;
-        s = saturation;
-        l = luminance;
         a = 1.0;
+        if (hue >= 360 || hue < 0) {
+            h = 0.0;
+        } else {
+            h = hue;
+        }
+        if (saturation > 1 || saturation < 0) {
+            s = 0.0;
+        } else {
+            s = saturation;
+        }
+        if (luminance > 1 || luminance < 0) {
+            l = 1.0;
+        } else {
+            l = luminance;
+        }
     }
     // pixel with given hue, saturation, luminance and alpha
     HSLAPixel::HSLAPixel(double hue, double saturation, double luminance, double alpha) {
-        h = hue;
-        s = saturation;
-        l = luminance;
-        a = alpha;
+        if (hue >= 360 || hue < 0) {
+            h = 0.0;
+        } else {
+            h = hue;
+        }
+        if (saturation > 1 || saturation < 0) {
+            s = 0.0;
+        } else {
+            s = saturation;
+        }
+        if (luminance > 1 || luminance < 0) {
+            l = 1.0;
+        } else {
+            l = luminance;
+        }
+        if (alpha > 1 || alpha < 0) {
+            a = 1.0;
+        } else {
+            a = alpha;
+        }
     }
 }
