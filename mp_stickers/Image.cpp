@@ -158,8 +158,8 @@ void Image::illinify() {
 
 // Scale the Image by a given factor. 
 void Image::scale(double factor) {
-    unsigned newWidth = this -> width() * factor;
-    unsigned newHeight = this -> height() * factor;
+    unsigned newWidth = (unsigned) (this -> width() * factor);
+    unsigned newHeight = (unsigned) (this -> height() * factor);
     cs225::PNG png = (*this);
     this -> resize(newWidth, newHeight);
     for (unsigned x = 0; x < newWidth; x++) {
@@ -174,10 +174,12 @@ void Image::scale(double factor) {
 // Scales the image to fit within the size (w x h)
 void Image::scale(unsigned w, unsigned h) {
     double factor = std::min((double) w / this -> width(), (double) h / this -> height());
+    unsigned newWidth = (unsigned) (this -> width() * factor);
+    unsigned newHeight = (unsigned) (this -> height() * factor);
     cs225::PNG png = (*this);
-    this -> resize(w, h);
-    for (unsigned x = 0; x < png.width() * factor; x++) {
-        for (unsigned y = 0; y < png.height() * factor; y++) {
+    this -> resize(newWidth, newHeight);
+    for (unsigned x = 0; x < newWidth; x++) {
+        for (unsigned y = 0; y < newHeight * factor; y++) {
             cs225::HSLAPixel& original = png.getPixel(floor(x / factor), floor(y / factor));
             cs225::HSLAPixel& newPixel = this -> getPixel(x, y);
             newPixel = original;
