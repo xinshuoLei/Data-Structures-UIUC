@@ -46,6 +46,8 @@ class Allocator
      */
     void printRooms(std::ostream & stream = std::cout);
 
+    ~Allocator();
+
   private:
     /**
      * Creates the array of letters.
@@ -81,6 +83,7 @@ class Allocator
      *  fewest spare seats.
      */
     int minSpaceRemaining();
+
 
     /** Array of all letters (size 26) */
     Letter* alpha;

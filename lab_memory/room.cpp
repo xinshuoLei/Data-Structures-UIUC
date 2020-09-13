@@ -42,8 +42,8 @@ Room::~Room()
 
 void Room::addLetter(const Letter& L)
 {
-    letters[letterCount++] = L;
-    count += L.count;
+        letters[letterCount++] = L;
+        count += L.count;
 }
 
 int Room::spaceRemaining()
@@ -63,7 +63,7 @@ void Room::clear()
 {
     if (letters != NULL)
 
-        delete letters;
+        delete[] letters;
 }
 
 void Room::copy(const Room& other)
@@ -72,6 +72,8 @@ void Room::copy(const Room& other)
     capacity = other.capacity;
     count = other.count;
     letterCount = other.letterCount;
-    letters = other.letters;
-
+    letters = new Letter[other.max_letters];
+    for (int a = 0; a < other.max_letters; a++) {
+        letters[a] = other.letters[a];
+    }
 }
