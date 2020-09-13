@@ -179,7 +179,7 @@ void Image::scale(unsigned w, unsigned h) {
     cs225::PNG png = (*this);
     this -> resize(newWidth, newHeight);
     for (unsigned x = 0; x < newWidth; x++) {
-        for (unsigned y = 0; y < newHeight * factor; y++) {
+        for (unsigned y = 0; y < newHeight; y++) {
             cs225::HSLAPixel& original = png.getPixel(floor(x / factor), floor(y / factor));
             cs225::HSLAPixel& newPixel = this -> getPixel(x, y);
             newPixel = original;
