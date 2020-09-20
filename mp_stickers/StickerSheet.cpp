@@ -1,7 +1,6 @@
 #include "StickerSheet.h"
 #include "cs225/HSLAPixel.h"
 #include <algorithm>
-#include <iostream>
 
 // Initializes this StickerSheet with a deep copy of the base picture and the ability to hold a max number of stickers (Images) with indices 0 through max - 1. 
 StickerSheet::StickerSheet(const Image &picture, unsigned max){
@@ -127,7 +126,6 @@ Image StickerSheet::render () const {
 }
 
 void StickerSheet::copy(const StickerSheet& other) {
-    std::cout << "call copy" << std::endl;
     base = new Image(*(other.base));
     maxNumber = other.maxNumber;
     stickers = new Image*[other.maxNumber];
