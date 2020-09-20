@@ -39,4 +39,12 @@ class StickerSheet {
         Image render () const;
         // Renders the whole StickerSheet on one Image and returns that Image. 
 
+    private:
+        Image** stickers;
+        Image* base;
+        int maxNumber;
+        void copy(const StickerSheet&);
+        void destroy();
+        int* x_;
+        int* y_;
 };
