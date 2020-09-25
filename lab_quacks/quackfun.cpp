@@ -4,6 +4,8 @@
  * stacks and queues portion of the lab.
  */
 
+#include <iostream>
+
 namespace QuackFun {
 
 /**
@@ -29,9 +31,16 @@ namespace QuackFun {
 template <typename T>
 T sum(stack<T>& s)
 {
+    if (s.empty()) {
+        return T();
+    }
+    T temp = s.top();
+    s.pop();
+    T total = temp + sum(s);
+    s.push(temp);
+    return total;
 
-    // Your code here
-    return T(); // stub return value (0 for primitive types). Change this!
+                // stub return value (0 for primitive types). Change this!
                 // Note: T() is the default value for objects, and 0 for
                 // primitive types
 }
@@ -55,8 +64,25 @@ T sum(stack<T>& s)
  */
 bool isBalanced(queue<char> input)
 {
-
     // @TODO: Make less optimistic
+    stack<char> left_bracket;
+    int size_ = input.size();
+    for (int i = 0; i < size_; i++) {
+        if (input.front() == '[') {
+            left_bracket.push(input.front());
+        } else if (input.front() == ']') {
+            if (left_bracket.empty()) {
+                return false;
+            }
+            left_bracket.pop();
+        }
+        char temp = input.front();
+        input.pop();
+        input.push(temp);
+    }
+    if (!left_bracket.empty()) {
+        return false;
+    }
     return true;
 }
 
@@ -79,6 +105,32 @@ template <typename T>
 void scramble(queue<T>& q)
 {
     stack<T> s;
+    int blocksize = 1;
+    int queue_size = q.size();
+    int size_count = 0;
+    while(size_count != queue_size) {
+        int remaining = queue_size - size_count;
+        if (blocksize % 2 == 0) {
+            for (int j = 0; j < std::min(blocksize, remaining); j++) {
+                T temp = q.front();
+                s.push(temp);
+                q.pop();
+                size_count++;
+            }
+            while (!s.empty()) {
+                q.push(s.top());
+                s.pop();
+            }
+        } else {
+            for (int k = 0; k < std::min(blocksize, remaining); k++) {
+                T temp2 = q.front();
+                q.pop();
+                q.push(temp2);
+                size_count++;
+            }
+        }
+        blocksize++;
+    }
     // optional: queue<T> q2;
 
     // Your code here
