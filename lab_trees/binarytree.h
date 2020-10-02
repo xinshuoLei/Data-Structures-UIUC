@@ -212,6 +212,11 @@ class BinaryTree
          * Private helper function for the public mirror function
          */
         void mirror(Node* subRoot);
+
+        /**
+        * private helper function for the public isOrderedRecursive function
+        */
+        bool isOrderedRecursive(Node* subRoot) const;
 };
 
 #include "binarytree_given.cpp"

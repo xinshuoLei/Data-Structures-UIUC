@@ -107,8 +107,15 @@ void BinaryTree<T>::mirror(Node* subRoot) {
 template <typename T>
 bool BinaryTree<T>::isOrderedIterative() const
 {
-    // your code here
-    return false;
+    InorderTraversal<int> tree(root);
+    int min = (*tree.begin()) -> elem;
+    for (TreeTraversal<int>::Iterator it = tree.begin(); it != tree.end(); ++it) {
+        if ((*it) -> elem < min) {
+            return false;
+        }
+        min = ((*it) -> elem);
+    }
+    return true;
 }
 
 /**
@@ -121,6 +128,36 @@ template <typename T>
 bool BinaryTree<T>::isOrderedRecursive() const
 {
     // your code here
-    return false;
+    return isOrderedRecursive(root);
 }
 
+/**
+ * private helper function for the public isOrderedRecursive function
+ */
+template <typename T>
+bool BinaryTree<T>::isOrderedRecursive(Node* subRoot) const {
+    if (subRoot == NULL) {
+        return true;
+    }
+    if (subRoot -> left != NULL) {
+        Node* left_rightmost = subRoot -> left;
+        while (left_rightmost -> right != NULL) {
+            left_rightmost = left_rightmost -> right;
+        }
+        if (left_rightmost -> elem > subRoot -> elem) {
+            return false;
+        }
+    }
+    if (subRoot -> right != NULL) {
+        Node* right_leftmost = subRoot -> right;
+        while (right_leftmost -> left != NULL) {
+            right_leftmost = right_leftmost -> left;
+        }
+        if (right_leftmost -> elem < subRoot -> elem) {
+            return false;
+        }
+    }
+    return isOrderedRecursive(subRoot -> left) && isOrderedRecursive(subRoot -> right);
+
+
+}
