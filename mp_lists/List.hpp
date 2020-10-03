@@ -272,21 +272,9 @@ void List<T>::reverseNth(int n) {
   }
 
   if (current != NULL) {
-    ListNode* last_start = current;
-    ListNode* last_start_prev = current -> prev;
-    while (current != NULL) {
-      ListNode* prev_ = current -> prev;
-      ListNode* next_ = current -> next;
-      current -> prev = next_;
-      current -> next = prev_;
-      current = next_;
-    }
-    if (last_start_prev != NULL) {
-      last_start_prev -> next = tail_;
-    }
-    tail_ -> prev = last_start_prev;
-    tail_ = last_start;
-    tail_ -> next = NULL;
+    ListNode* new_tail = current;
+    reverse(current, tail_);
+    tail_ = new_tail;
   }
 }
 
