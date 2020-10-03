@@ -204,14 +204,6 @@ template <typename T>
 void List<T>::reverse(ListNode *& startPoint, ListNode *& endPoint) {
   /// @todo Graded in MP3.2
   if (startPoint != NULL && endPoint != NULL) {
-    ListNode* startPrev = NULL;
-    ListNode* endNext = NULL;
-    if (startPoint -> prev != NULL) {
-      startPrev = startPoint -> prev;
-    }
-    if (endPoint -> next != NULL) {
-      endNext = endPoint -> next;
-    }
     ListNode* current = startPoint; 
     for (int i = 0; i < size() && current != NULL; i++) {
       ListNode* current_next = current -> next;
@@ -223,14 +215,6 @@ void List<T>::reverse(ListNode *& startPoint, ListNode *& endPoint) {
     ListNode* temp = startPoint;
     startPoint = endPoint;
     endPoint = temp;
-    if (startPrev != NULL) {
-      startPrev -> prev = startPrev;
-      startPrev -> next = startPoint;
-    }
-    if (endNext != NULL) {
-      endPoint -> next = endNext;
-      endNext -> prev = endPoint;
-    }
   }
 }
 
@@ -243,26 +227,69 @@ void List<T>::reverse(ListNode *& startPoint, ListNode *& endPoint) {
 template <typename T>
 void List<T>::reverseNth(int n) {
   /// @todo Graded in MP3.2
-  /**
+  if (head_ == NULL || tail_ == NULL) {
+    return;
+  }
+  if (n >= size()) {
+    reverse();
+    return;
+  }
+  
   ListNode* current = head_;
-  for (int i = 0; i + n < size() && current != NULL; i += n) {
+  for (int i = 0; i + n - 1 < size() && current != NULL; i += n) {
     ListNode* end = current;
-    for (int j = 0; j < n -1; j++) {
+    ListNode* reverse_current = current;
+    ListNode* currentPrev = current -> prev;
+    for (int j = 0; j < n - 1; j++) {
       end = end -> next;
     }
-    std::cout << "end: " << end -> data << std::endl;
-    ListNode* next = end -> next;
-    reverse(current, end);
-    std::cout << "end: " << end -> data << std::endl;
-    current = next;
-    std::cout << "current " << current -> data << std::endl;
+    ListNode* endNext = end -> next;
+    for (int k = 0; k < n && reverse_current != NULL; k++) {
+      ListNode* current_next = reverse_current -> next;
+      ListNode* current_prev = reverse_current -> prev;
+      reverse_current -> next = current_prev;
+      reverse_current -> prev = current_next;
+      reverse_current = current_next;
+    }
+    ListNode* temp = current;
+    current = end;
+    end = temp;
+    if (i == 0) {
+      head_ = current;
+    }
+    if (i + n-1 == size()) {
+      tail_ = end;
+    }
+
+    current -> prev = currentPrev;
+    if (currentPrev != NULL) {
+      currentPrev -> next = current;
+    }
+
+    end -> next = endNext;
+    if (endNext != NULL) {
+      endNext -> prev = end;
+    }
+    current = endNext;
   }
-  */
-  /**
+
   if (current != NULL) {
-    reverse(current, tail_);
+    ListNode* last_start = current;
+    ListNode* last_start_prev = current -> prev;
+    while (current != NULL) {
+      ListNode* prev_ = current -> prev;
+      ListNode* next_ = current -> next;
+      current -> prev = next_;
+      current -> next = prev_;
+      current = next_;
+    }
+    if (last_start_prev != NULL) {
+      last_start_prev -> next = tail_;
+    }
+    tail_ -> prev = last_start_prev;
+    tail_ = last_start;
+    tail_ -> next = NULL;
   }
-  */
 }
 
 
