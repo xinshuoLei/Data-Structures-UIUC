@@ -203,6 +203,35 @@ void List<T>::reverse() {
 template <typename T>
 void List<T>::reverse(ListNode *& startPoint, ListNode *& endPoint) {
   /// @todo Graded in MP3.2
+  if (startPoint != NULL && endPoint != NULL) {
+    ListNode* startPrev = NULL;
+    ListNode* endNext = NULL;
+    if (startPoint -> prev != NULL) {
+      startPrev = startPoint -> prev;
+    }
+    if (endPoint -> next != NULL) {
+      endNext = endPoint -> next;
+    }
+    ListNode* current = startPoint; 
+    for (int i = 0; i < size() && current != NULL; i++) {
+      ListNode* current_next = current -> next;
+      ListNode* current_prev = current -> prev;
+      current -> next = current_prev;
+      current -> prev = current_next;
+      current = current_next;
+    }
+    ListNode* temp = startPoint;
+    startPoint = endPoint;
+    endPoint = temp;
+    if (startPrev != NULL) {
+      startPrev -> prev = startPrev;
+      startPrev -> next = startPoint;
+    }
+    if (endNext != NULL) {
+      endPoint -> next = endNext;
+      endNext -> prev = endPoint;
+    }
+  }
 }
 
 /**
@@ -214,6 +243,26 @@ void List<T>::reverse(ListNode *& startPoint, ListNode *& endPoint) {
 template <typename T>
 void List<T>::reverseNth(int n) {
   /// @todo Graded in MP3.2
+  /**
+  ListNode* current = head_;
+  for (int i = 0; i + n < size() && current != NULL; i += n) {
+    ListNode* end = current;
+    for (int j = 0; j < n -1; j++) {
+      end = end -> next;
+    }
+    std::cout << "end: " << end -> data << std::endl;
+    ListNode* next = end -> next;
+    reverse(current, end);
+    std::cout << "end: " << end -> data << std::endl;
+    current = next;
+    std::cout << "current " << current -> data << std::endl;
+  }
+  */
+  /**
+  if (current != NULL) {
+    reverse(current, tail_);
+  }
+  */
 }
 
 
