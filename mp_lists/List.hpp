@@ -377,5 +377,14 @@ typename List<T>::ListNode * List<T>::merge(ListNode * first, ListNode* second) 
 template <typename T>
 typename List<T>::ListNode* List<T>::mergesort(ListNode * start, int chainLength) {
   /// @todo Graded in MP3.2
-  return NULL;
+  if (chainLength == 1) {
+    return start;
+  }
+  ListNode* second_start = start;
+  for (int i = 0; i < chainLength / 2; i++) {
+    second_start = second_start -> next;
+  }
+  second_start -> prev -> next = NULL;
+  second_start -> prev = NULL;
+  return merge(mergesort(start, chainLength / 2), mergesort(second_start, chainLength / 2 + chainLength % 2));
 }
