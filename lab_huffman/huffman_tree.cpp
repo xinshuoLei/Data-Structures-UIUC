@@ -83,7 +83,25 @@ HuffmanTree::removeSmallest(queue<TreeNode*>& singleQueue,
      * smaller of the two queues heads is the smallest item in either of
      * the queues. Return this item after removing it from its queue.
      */
-    return NULL;
+    HuffmanTree::TreeNode* smallest = NULL;
+    if (singleQueue.empty() && mergeQueue.empty()) {
+        return smallest;
+    }
+    if (singleQueue.empty()) {
+        smallest = mergeQueue.front();
+        mergeQueue.pop();
+    } else if (mergeQueue.empty()) {
+        smallest = singleQueue.front();
+        singleQueue.pop();
+    } else if (singleQueue.front() -> freq < mergeQueue.front() -> freq || 
+        singleQueue.front() -> freq == mergeQueue.front() -> freq) {
+        smallest = singleQueue.front();
+        singleQueue.pop();
+    } else {
+        smallest = mergeQueue.front();
+        mergeQueue.pop();
+    }
+    return smallest;
 }
 
 void HuffmanTree::buildTree(const vector<Frequency>& frequencies)
@@ -109,6 +127,31 @@ void HuffmanTree::buildTree(const vector<Frequency>& frequencies)
      * to the root and you're done!
      */
 
+    for (auto i = frequencies.begin(); i != frequencies.end(); ++i) {
+        HuffmanTree::TreeNode* new_node = new HuffmanTree::TreeNode(*i);
+        singleQueue.push(new_node);
+    }
+    while (!singleQueue.empty() || !mergeQueue.empty()) {
+        if (singleQueue.size() == 1 && mergeQueue.empty()) {
+            break;
+        }
+        if (mergeQueue.size() == 1 && singleQueue.empty()) {
+            break;
+        }
+        HuffmanTree::TreeNode* node1 = removeSmallest(singleQueue, mergeQueue);
+        HuffmanTree::TreeNode* node2 = removeSmallest(singleQueue, mergeQueue);
+        HuffmanTree::TreeNode* merged_node = 
+        new HuffmanTree::TreeNode(node1 -> freq.getFrequency()  + node2 -> freq.getFrequency());
+        merged_node -> left = node1;
+        merged_node -> right = node2;
+        mergeQueue.push(merged_node);
+    }
+    if (!singleQueue.empty()) {
+        root_ = singleQueue.front();
+    } else {
+        root_ = mergeQueue.front();
+    }
+
 }
 
 string HuffmanTree::decodeFile(BinaryFileReader& bfile)
@@ -133,6 +176,15 @@ void HuffmanTree::decode(stringstream& ss, BinaryFileReader& bfile)
          * character to the stringstream (with operator<<, just like cout)
          * and start traversing from the root node again.
          */
+        if (bfile.getNextBit()) {
+            current = current -> right;
+        } else {
+            current = current -> left;
+        }
+        if (current -> left == NULL && current -> right == NULL) {
+            ss << current -> freq.getCharacter();
+            current = root_;
+        }
     }
 }
 
