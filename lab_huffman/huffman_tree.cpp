@@ -210,6 +210,14 @@ void HuffmanTree::writeTree(TreeNode* current, BinaryFileWriter& bfile)
      * version: this is fine, as the structure of the tree still reflects
      * what the relative frequencies were.
      */
+    if (current -> left == NULL && current -> right == NULL) {
+        bfile.writeBit(1);
+        bfile.writeByte(current -> freq.getCharacter());
+        return;
+    }
+    bfile.writeBit(0);
+    writeTree(current -> left, bfile);
+    writeTree(current -> right, bfile);
 }
 
 HuffmanTree::TreeNode* HuffmanTree::readTree(BinaryFileReader& bfile)
@@ -230,8 +238,17 @@ HuffmanTree::TreeNode* HuffmanTree::readTree(BinaryFileReader& bfile)
      *      4. Your function should return the TreeNode it creates, or NULL
      *         if it did not create one.
      */
-
-    return NULL;
+    if (!bfile.hasBits()) {
+        return NULL;
+    }
+    if (bfile.getNextBit()) {
+        HuffmanTree::TreeNode* new_leaf = new HuffmanTree::TreeNode(Frequency(bfile.getNextByte(), 0));
+        return new_leaf;
+    } 
+    HuffmanTree::TreeNode* new_interal = new HuffmanTree::TreeNode(0);
+    new_interal -> left = readTree(bfile);
+    new_interal -> right = readTree(bfile);
+    return new_interal;
 }
 
 void HuffmanTree::buildMap(TreeNode* current, vector<bool>& path)
