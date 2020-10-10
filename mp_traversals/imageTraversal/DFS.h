@@ -31,7 +31,7 @@ public:
   Point pop();
   Point peek() const;
   bool empty() const;
-  ~DFS();
+  virtual ~DFS();
 
 private:
 	/** @todo [Part 1] */
