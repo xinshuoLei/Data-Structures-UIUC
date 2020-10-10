@@ -28,6 +28,7 @@ DFS::DFS(const PNG & png, const Point & start, double tolerance) {
   png_ = png;
   start_ = start;
   stack.push(start);
+  copy = NULL;
 }
 
 /**
@@ -35,7 +36,8 @@ DFS::DFS(const PNG & png, const Point & start, double tolerance) {
  */
 ImageTraversal::Iterator DFS::begin() {
   /** @todo [Part 1] */
-  return ImageTraversal::Iterator(this, start_, tolerance_, png_);
+  copy = new DFS(png_, start_, tolerance_);
+  return ImageTraversal::Iterator(copy, start_, tolerance_, png_);
 }
 
 /**
@@ -79,3 +81,10 @@ bool DFS::empty() const {
   /** @todo [Part 1] */
   return stack.empty();
 }
+
+DFS::~DFS() {
+  if (copy != NULL) {
+    delete copy;
+  }
+}
+  

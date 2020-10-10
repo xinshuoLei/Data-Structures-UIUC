@@ -28,6 +28,7 @@ BFS::BFS(const PNG & png, const Point & start, double tolerance) {
   start_ = start;
   tolerance_ = tolerance;
   queue.push(start_);
+  copy = NULL;
 }
 
 /**
@@ -35,7 +36,8 @@ BFS::BFS(const PNG & png, const Point & start, double tolerance) {
  */
 ImageTraversal::Iterator BFS::begin() {
   /** @todo [Part 1] */
-  return ImageTraversal::Iterator(this, start_, tolerance_, png_);
+  copy = new BFS(png_, start_, tolerance_);
+  return ImageTraversal::Iterator(copy, start_, tolerance_, png_);
 }
 
 /**
@@ -78,4 +80,10 @@ Point BFS::peek() const {
 bool BFS::empty() const {
   /** @todo [Part 1] */
   return queue.empty();
+}
+
+BFS::~BFS() {
+  if (copy != NULL) {
+    delete copy;
+  }
 }

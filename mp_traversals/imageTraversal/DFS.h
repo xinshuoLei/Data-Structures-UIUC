@@ -31,6 +31,7 @@ public:
   Point pop();
   Point peek() const;
   bool empty() const;
+  ~DFS();
 
 private:
 	/** @todo [Part 1] */
@@ -39,4 +40,5 @@ private:
   double tolerance_;
   PNG png_;
   Point start_;
+  DFS* copy;
 };

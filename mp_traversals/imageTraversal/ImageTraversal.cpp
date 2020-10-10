@@ -75,7 +75,8 @@ ImageTraversal::Iterator & ImageTraversal::Iterator::operator++() {
     HSLAPixel start_pixel = it_png.getPixel(start_point.x, start_point.y);
     while (!traversal_ -> empty()) {
       HSLAPixel current_pixel = it_png.getPixel(traversal_ -> peek().x, traversal_ -> peek().y);
-      if (calculateDelta(start_pixel, current_pixel) >= it_tolerance_ || visited[traversal_ -> peek().x][traversal_ -> peek().y]) {
+      if (calculateDelta(start_pixel, current_pixel) >= it_tolerance_ 
+        || visited[traversal_ -> peek().x][traversal_ -> peek().y]) {
         traversal_ -> pop();
       } else {
         break;
