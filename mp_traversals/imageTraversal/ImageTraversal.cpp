@@ -53,37 +53,37 @@ ImageTraversal::Iterator & ImageTraversal::Iterator::operator++() {
   visited.push_back(current_point); 
   if (!traversal_ -> empty()) {
     current_point = traversal_-> pop();
-  } 
-  if (current_point.x + 1 < it_png.width()) {
-    traversal_ -> add(Point(current_point.x + 1, current_point.y));
-  }
-  if (current_point.y + 1 < it_png.height()) {
-    traversal_ -> add(Point(current_point.x, current_point.y + 1));
-  }
-  if (current_point.x >= 1) {
-    traversal_ -> add(Point(current_point.x - 1, current_point.y));
-  }
-  if (current_point.y >= 1) {
-    traversal_ -> add(Point(current_point.x, current_point.y - 1));
-  }
-  HSLAPixel start_pixel = it_png.getPixel(start_point.x, start_point.y);
-  while (!traversal_ -> empty()) {
-    HSLAPixel current_pixel = it_png.getPixel(traversal_ -> peek().x, traversal_ -> peek().y);
-    bool visited_before = false;
-    for (auto i = visited.begin(); i != visited.end(); ++i) {
-      if (*i == traversal_ -> peek()) {
-        visited_before = true;
+      if (current_point.x + 1 < it_png.width()) {
+      traversal_ -> add(Point(current_point.x + 1, current_point.y));
+    }
+    if (current_point.y + 1 < it_png.height()) {
+      traversal_ -> add(Point(current_point.x, current_point.y + 1));
+    }
+    if (current_point.x >= 1) {
+      traversal_ -> add(Point(current_point.x - 1, current_point.y));
+    }
+    if (current_point.y >= 1) {
+      traversal_ -> add(Point(current_point.x, current_point.y - 1));
+    }
+    HSLAPixel start_pixel = it_png.getPixel(start_point.x, start_point.y);
+    while (!traversal_ -> empty()) {
+      HSLAPixel current_pixel = it_png.getPixel(traversal_ -> peek().x, traversal_ -> peek().y);
+      bool visited_before = false;
+      for (auto i = visited.begin(); i != visited.end(); ++i) {
+        if (*i == traversal_ -> peek()) {
+          visited_before = true;
+        }
+      }
+      if (calculateDelta(start_pixel, current_pixel) >= it_tolerance_ || visited_before) {
+        traversal_ -> pop();
+      } else {
+        break;
       }
     }
-    if (calculateDelta(start_pixel, current_pixel) >= it_tolerance_ || visited_before) {
-      traversal_ -> pop();
-    } else {
-      break;
+    if (!traversal_->empty()) {
+      current_point = traversal_ -> peek(); 
     }
-  }
-  if (!traversal_->empty()) {
-    current_point = traversal_ -> peek(); 
-  }
+  } 
   return *this;
 }
 

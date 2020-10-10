@@ -51,20 +51,6 @@ ImageTraversal::Iterator DFS::end() {
  */
 void DFS::add(const Point & point) {
   /** @todo [Part 1] */
-  /**
-  if (point.x + 1 < png_.width()) {
-    stack.push(Point(point.x + 1, point.y));
-  }
-  if (point.x - 1 >= 0) {
-    stack.push(Point(point.x - 1, point.y));
-  }
-  if (point.y + 1 < png_.height()) {
-    stack.push(Point(point.x, point.y + 1));
-  }
-  if (point.y - 1 >= 0) {
-    stack.push(Point(point.x, point.y - 1));
-  }
-  */
   stack.push(point);
 }
 
@@ -73,23 +59,6 @@ void DFS::add(const Point & point) {
  */
 Point DFS::pop() {
   /** @todo [Part 1] */
-  /**
-  while (!stack.empty()) {
-    bool visited_before = false;
-    for (auto i = visited.begin(); i != visited.end(); ++i) {
-      if (*i == stack.top()) {
-        visited_before = true;
-      }
-    }
-    HSLAPixel start_pixel = png_.getPixel(stack.top().x, stack.top().y);
-    HSLAPixel top_pixel = png_.getPixel(stack.top().x, stack.top().y); 
-    if (visited_before) {
-      stack.pop();
-    } else {
-      break;
-    }
-  }
-  */
   Point top = stack.top();
   stack.pop();
   return top;
