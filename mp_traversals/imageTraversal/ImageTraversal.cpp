@@ -42,6 +42,13 @@ ImageTraversal::Iterator::Iterator(ImageTraversal* traversal, Point point, doubl
   traversal_ = traversal;
   current_point = traversal -> peek();
   it_png = png;
+  for (unsigned i = 0; i < it_png.width(); i++) {
+    std::vector<bool> column;
+    for (unsigned j = 0; j < it_png.height(); j++) {
+      column.push_back(false);
+    }
+    visited.push_back(column);
+  }
 }
 /**
  * Iterator increment opreator.
@@ -50,10 +57,10 @@ ImageTraversal::Iterator::Iterator(ImageTraversal* traversal, Point point, doubl
  */
 ImageTraversal::Iterator & ImageTraversal::Iterator::operator++() {
   /** @todo [Part 1] */
-  visited.push_back(current_point); 
+  visited[current_point.x][current_point.y] = true; 
   if (!traversal_ -> empty()) {
     current_point = traversal_-> pop();
-      if (current_point.x + 1 < it_png.width()) {
+    if (current_point.x + 1 < it_png.width()) {
       traversal_ -> add(Point(current_point.x + 1, current_point.y));
     }
     if (current_point.y + 1 < it_png.height()) {
@@ -68,13 +75,7 @@ ImageTraversal::Iterator & ImageTraversal::Iterator::operator++() {
     HSLAPixel start_pixel = it_png.getPixel(start_point.x, start_point.y);
     while (!traversal_ -> empty()) {
       HSLAPixel current_pixel = it_png.getPixel(traversal_ -> peek().x, traversal_ -> peek().y);
-      bool visited_before = false;
-      for (auto i = visited.begin(); i != visited.end(); ++i) {
-        if (*i == traversal_ -> peek()) {
-          visited_before = true;
-        }
-      }
-      if (calculateDelta(start_pixel, current_pixel) >= it_tolerance_ || visited_before) {
+      if (calculateDelta(start_pixel, current_pixel) >= it_tolerance_ || visited[traversal_ -> peek().x][traversal_ -> peek().y]) {
         traversal_ -> pop();
       } else {
         break;

@@ -46,7 +46,7 @@ public:
     Point current_point;
     ImageTraversal* traversal_;
     PNG it_png;
-    std::vector<Point> visited;
+    std::vector<std::vector<bool>> visited;
   };
 
   /**
