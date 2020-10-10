@@ -71,6 +71,7 @@ Animation FloodFilledImage::animate(unsigned frameInterval) const {
       time++;
       if (time == frameInterval) {
         animation.addFrame(*png_);
+        time = 0;
       }
     }
   }
