@@ -40,5 +40,5 @@ private:
   double tolerance_;
   PNG png_;
   Point start_;
-  DFS* copy;
+  std::vector<DFS*> copies;
 };
