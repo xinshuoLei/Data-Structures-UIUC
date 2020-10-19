@@ -4,14 +4,6 @@
  * You'll need to modify this file.
  */
 
-template <class K, class V> 
-int AVLTree<K,V>::getHeight(const Node* node) {
-    if (node == NULL) {
-        return -1;
-    }
-    return node -> height;
-}
-
 template <class K, class V>
 V AVLTree<K, V>::find(const K& key) const
 {
@@ -44,11 +36,11 @@ void AVLTree<K, V>::rotateLeft(Node*& t)
     Node* new_top = t -> right;
     if (new_top != NULL) {
         t -> right = new_top -> left;
-        t -> height = 1 + std::max(getHeight(t -> left), getHeight(t -> right));
+        t -> height = 1 + std::max(heightOrNeg1(t -> left), heightOrNeg1(t -> right));
         new_top -> left = t;
         t = new_top;
     }
-    new_top -> height = 1 + std::max(getHeight(new_top -> left), getHeight(new_top -> right));
+    t -> height = 1 + std::max(heightOrNeg1(t -> left), heightOrNeg1(t -> right));
 }
 
 template <class K, class V>
@@ -71,11 +63,11 @@ void AVLTree<K, V>::rotateRight(Node*& t)
     Node* new_top = t -> left;
     if (new_top != NULL) {
         t -> left = new_top -> right;
-        t -> height = 1 + std::max(getHeight(t -> left), getHeight(t -> right));
+        t -> height = 1 + std::max(heightOrNeg1(t -> left), heightOrNeg1(t -> right));
         new_top -> right = t;
         t = new_top;
     }
-    new_top -> height = 1 + std::max(getHeight(new_top -> left), getHeight(new_top -> right));
+    t -> height = 1 + std::max(heightOrNeg1(t -> left), heightOrNeg1(t -> right));
 }
 
 template <class K, class V>
@@ -94,12 +86,12 @@ void AVLTree<K, V>::rebalance(Node*& subtree)
     if (subtree == NULL) {
         return;
     }
-    int balance_factor = getHeight(subtree -> right) - getHeight(subtree -> left);
+    int balance_factor = heightOrNeg1(subtree -> right) - heightOrNeg1(subtree -> left);
     if ((balance_factor <= 1 && balance_factor >= -1)) {
         return;
     }
     if (subtree -> right != NULL && balance_factor > 1) {
-        int right_balance = getHeight(subtree -> right -> right) - getHeight(subtree -> right -> left);
+        int right_balance = heightOrNeg1(subtree -> right -> right) - heightOrNeg1(subtree -> right -> left);
         if (right_balance == 1) {
             rotateLeft(subtree);
         } else if (right_balance == -1) {
@@ -107,14 +99,14 @@ void AVLTree<K, V>::rebalance(Node*& subtree)
         }
     }
     if (subtree -> left != NULL && balance_factor < 1) {
-        int left_balance = getHeight(subtree -> left -> right) - getHeight(subtree -> left -> left);
+        int left_balance = heightOrNeg1(subtree -> left -> right) - heightOrNeg1(subtree -> left -> left);
         if (left_balance == 1) {
             rotateLeftRight(subtree);
         } else if (left_balance == -1) {
             rotateRight(subtree);
         }
     }
-    subtree -> height = 1 + std::max(getHeight(subtree -> left), getHeight(subtree -> right));
+    subtree -> height = 1 + std::max(heightOrNeg1(subtree -> left), heightOrNeg1(subtree -> right));
 }
 
 template <class K, class V>
@@ -132,21 +124,18 @@ void AVLTree<K, V>::insert(Node*& subtree, const K& key, const V& value)
         return;
     } else if (subtree -> key < key) {
         insert(subtree -> right, key, value);
-        int balance = getHeight(subtree -> right) - getHeight(subtree -> left);
+        int balance = heightOrNeg1(subtree -> right) - heightOrNeg1(subtree -> left);
         if (balance >= 2) {
-
-            if (subtree -> right) {
-            }
             rebalance(subtree);
         }
     } else if (subtree -> key > key) {
         insert(subtree -> left, key, value);
-        int balance = getHeight(subtree -> right) - getHeight(subtree -> left);
+        int balance = heightOrNeg1(subtree -> right) - heightOrNeg1(subtree -> left);
         if (balance <= -2) {
             rebalance(subtree);
         }
     }
-    subtree -> height = 1 + std::max(getHeight(subtree -> left), getHeight(subtree -> right));
+    subtree -> height = 1 + std::max(heightOrNeg1(subtree -> left), heightOrNeg1(subtree -> right));
 }
 
 template <class K, class V>
@@ -198,7 +187,7 @@ void AVLTree<K, V>::remove(Node*& subtree, const K& key)
         // your code here
     }
     if (subtree != NULL) {
-        subtree -> height = 1 + std::max(getHeight(subtree -> left), getHeight(subtree -> right));
+        subtree -> height = 1 + std::max(heightOrNeg1(subtree -> left), heightOrNeg1(subtree -> right));
         rebalance(subtree);
     }
 }

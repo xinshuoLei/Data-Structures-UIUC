@@ -42,8 +42,6 @@ class AVLTree
         {
         }
     };
-    
-    int getHeight(const Node* node);
 
   public:
     /**
