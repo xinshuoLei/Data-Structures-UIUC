@@ -78,7 +78,7 @@ Point<Dim> KDTree<Dim>::quick_select(vector<Point<Dim>>& v, int left, int right,
     pivotIndex = partition(v, left, right, pivotIndex, dimension);
     if (pivotIndex == median) {
       return v[median];
-    } else if (pivotIndex < median) {
+    } else if (median < pivotIndex) {
       return quick_select(v, left, pivotIndex - 1, median, dimension);
     }
     return quick_select(v, pivotIndex + 1, right, median, dimension);
