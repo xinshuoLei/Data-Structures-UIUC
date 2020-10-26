@@ -170,7 +170,53 @@ Point<Dim> KDTree<Dim>::findNearestNeighbor(const Point<Dim>& query) const
      * @todo Implement this function!
      */
 
-    return Point<Dim>();
+    return find(query, 0, root);
+}
+
+template <int Dim>
+Point<Dim> KDTree<Dim>::find(const Point<Dim>& query, int dim, KDTreeNode* subRoot) const{
+    if (subRoot == NULL) {
+      return Point<Dim>();
+    }
+    // if subRoot is leaf 
+    if (subRoot -> left == NULL && subRoot -> right == NULL) {
+      return subRoot -> point;
+    }
+    if (subRoot -> point == query) {
+      return subRoot -> point;
+    }
+    // traverse down
+    Point<Dim> nearest;
+    bool left_recurse = false;
+    if (smallerDimVal(query, subRoot -> point, dim)) {
+      nearest = find(query, (dim + 1) % Dim, subRoot -> left);
+      left_recurse = true;
+    } else {
+      nearest = find(query, (dim + 1) % Dim, subRoot -> right);
+    }
+    // if subRoot is closer, replace neareset with subRoot
+    if (shouldReplace(query, nearest, subRoot -> point)) {
+      nearest = subRoot -> point;
+    }
+    // calculate radius and splitDistance
+    double radius = 0;
+    for (int i = 0; i < Dim; i++) {
+      radius += (nearest[i] - query[i]) * (nearest[i] - query[i]); 
+    }
+    double splitDistance = (subRoot -> point[dim] - query[dim]) * (subRoot -> point[dim] - query[dim]);
+    // if radius >= splitDistance, check other subtrees
+    if (radius >= splitDistance) {
+      Point<Dim> temp;
+      if (left_recurse) {
+        temp = find(query, (dim + 1) % Dim, subRoot -> right);
+      } else {
+        temp = find(query, (dim + 1) % Dim, subRoot -> left);
+      }
+      if (shouldReplace(query, nearest, temp)) {
+        nearest = temp;
+      }
+    }
+    return nearest;
 }
 
 

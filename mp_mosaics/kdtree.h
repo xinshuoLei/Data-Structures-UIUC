@@ -270,6 +270,9 @@ class KDTree
     // helper function for rule of three
     KDTreeNode* copy(KDTreeNode* subRoot);
     void clear(KDTreeNode* subRoot);
+
+    // helper function for findNearestNeighbor
+    Point<Dim> find(const Point<Dim>& query, int dim, KDTreeNode* subRoot) const;
 };
 
 #include "kdtree.hpp"
