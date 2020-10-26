@@ -259,6 +259,17 @@ class KDTree
     /**
      * @todo Add your helper functions here.
      */
+    
+    // quick select
+    int partition(vector<Point<Dim>>& v, int left, int right, int pivotIndex, int dimension);
+    Point<Dim> quick_select(vector<Point<Dim>>& v, int left, int right, int median, int dimension);
+
+    // helper function for constructor
+    KDTreeNode* buildTree(vector<Point<Dim>>& points, int dim, int left, int right);
+
+    // helper function for rule of three
+    KDTreeNode* copy(KDTreeNode* subRoot);
+    void clear(KDTreeNode* subRoot);
 };
 
 #include "kdtree.hpp"
