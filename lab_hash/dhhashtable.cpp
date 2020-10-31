@@ -81,8 +81,18 @@ void DHHashTable<K, V>::insert(K const& key, V const& value)
      *  forget to mark the cell for probing with should_probe!
      */
 
-    (void) key;   // prevent warnings... When you implement this function, remove this line.
-    (void) value; // prevent warnings... When you implement this function, remove this line.
+    // (void) key;   // prevent warnings... When you implement this function, remove this line.
+    // (void) value; // prevent warnings... When you implement this function, remove this line.
+    elems++;
+    if (shouldResize()) {
+        resizeTable();
+    }
+    int index = hashes::hash(key, size);
+    while (should_probe[index]) {
+        index = (index + hashes::secondary_hash(key, size)) % size;
+    }
+    table[index] = new std::pair<K,V>(key, value);
+    should_probe[index] = true;
 }
 
 template <class K, class V>
@@ -91,6 +101,12 @@ void DHHashTable<K, V>::remove(K const& key)
     /**
      * @todo Implement this function
      */
+    int index = findIndex(key);
+    if (index != -1 && table[index]) {
+        delete table[index];
+        table[index] = NULL;
+        elems--;
+    }
 }
 
 template <class K, class V>
@@ -99,6 +115,21 @@ int DHHashTable<K, V>::findIndex(const K& key) const
     /**
      * @todo Implement this function
      */
+     int index = hashes::hash(key, size);
+    int original_index = index;
+    if (!should_probe[index]) {
+        return -1;
+    }
+    while (should_probe[index]) {
+        if (table[index] && table[index] -> first == key) {
+            return index;   
+        }
+        index = (index + hashes::secondary_hash(key, size)) % size;
+        // already loop through every element and no match
+        if (original_index == index) {
+            return -1;
+        }
+    }
     return -1;
 }
 
