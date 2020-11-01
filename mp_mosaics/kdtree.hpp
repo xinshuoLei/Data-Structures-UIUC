@@ -31,8 +31,8 @@ bool KDTree<Dim>::shouldReplace(const Point<Dim>& target,
     /**
      * @todo Implement this function!
      */
-    int current_distance = 0;
-    int potential_distance = 0;
+    double current_distance = 0;
+    double potential_distance = 0;
     for (int i = 0; i < Dim; i++) {
       current_distance += (currentBest[i] - target[i]) * (currentBest[i] - target[i]);
       potential_distance += (potential[i] - target[i]) * (potential[i] - target[i]);
@@ -176,7 +176,7 @@ Point<Dim> KDTree<Dim>::findNearestNeighbor(const Point<Dim>& query) const
 template <int Dim>
 Point<Dim> KDTree<Dim>::find(const Point<Dim>& query, int dim, KDTreeNode* subRoot) const{
     if (subRoot == NULL) {
-      return Point<Dim>();
+      return root->point;
     }
     // if subRoot is leaf 
     if (subRoot -> left == NULL && subRoot -> right == NULL) {
@@ -188,10 +188,16 @@ Point<Dim> KDTree<Dim>::find(const Point<Dim>& query, int dim, KDTreeNode* subRo
     // traverse down
     Point<Dim> nearest;
     bool left_recurse = false;
-    if (smallerDimVal(query, subRoot -> point, dim)) {
+    if (subRoot -> left == NULL) {
+      nearest = find(query, (dim + 1) % Dim, subRoot -> right);
+    } else if (subRoot -> right == NULL) {
       nearest = find(query, (dim + 1) % Dim, subRoot -> left);
       left_recurse = true;
-    } else {
+    }
+    if (smallerDimVal(query, subRoot -> point, dim) && subRoot -> left != NULL) {
+      nearest = find(query, (dim + 1) % Dim, subRoot -> left);
+      left_recurse = true;
+    } else if (subRoot -> right != NULL) {
       nearest = find(query, (dim + 1) % Dim, subRoot -> right);
     }
     // if subRoot is closer, replace neareset with subRoot
@@ -201,9 +207,9 @@ Point<Dim> KDTree<Dim>::find(const Point<Dim>& query, int dim, KDTreeNode* subRo
     // calculate radius and splitDistance
     double radius = 0;
     for (int i = 0; i < Dim; i++) {
-      radius += (nearest[i] - query[i]) * (nearest[i] - query[i]); 
+      radius += ((double) nearest[i] - (double) query[i]) * ((double) nearest[i] - (double) query[i]); 
     }
-    double splitDistance = (subRoot -> point[dim] - query[dim]) * (subRoot -> point[dim] - query[dim]);
+    double splitDistance = ((double) subRoot -> point[dim] - (double) query[dim]) * ((double) subRoot -> point[dim] - (double) query[dim]);
     // if radius >= splitDistance, check other subtrees
     if (radius >= splitDistance) {
       Point<Dim> temp;
