@@ -188,16 +188,10 @@ Point<Dim> KDTree<Dim>::find(const Point<Dim>& query, int dim, KDTreeNode* subRo
     // traverse down
     Point<Dim> nearest;
     bool left_recurse = false;
-    if (subRoot -> left == NULL) {
-      nearest = find(query, (dim + 1) % Dim, subRoot -> right);
-    } else if (subRoot -> right == NULL) {
+    if (smallerDimVal(query, subRoot -> point, dim)) {
       nearest = find(query, (dim + 1) % Dim, subRoot -> left);
       left_recurse = true;
-    }
-    if (smallerDimVal(query, subRoot -> point, dim) && subRoot -> left != NULL) {
-      nearest = find(query, (dim + 1) % Dim, subRoot -> left);
-      left_recurse = true;
-    } else if (subRoot -> right != NULL) {
+    } else {
       nearest = find(query, (dim + 1) % Dim, subRoot -> right);
     }
     // if subRoot is closer, replace neareset with subRoot
