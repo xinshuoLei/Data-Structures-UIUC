@@ -42,7 +42,7 @@ AnagramDict::AnagramDict(const string& filename)
 AnagramDict::AnagramDict(const vector<string>& words)
 {
     /* Your code goes here! */
-    for (auto word : words) {
+    for (auto& word : words) {
         string sorted = word;
         sort(sorted.begin(), sorted.end());
         dict[sorted].push_back(word);
@@ -81,7 +81,7 @@ vector<vector<string>> AnagramDict::get_all_anagrams() const
 {
     /* Your code goes here! */
     vector<vector<string>> result;
-    for (auto pair : dict) {
+    for (auto& pair : dict) {
         if (pair.second.size() >= 2) {
             result.push_back(pair.second);
         }
