@@ -81,6 +81,7 @@ vector<string> CommonWords::get_common_words(unsigned int n) const
             for (auto map : file_word_maps) {
                 if (map[pair.first] < n) {
                     push = false;
+                    break;
                 }
             }
             if (push) {
