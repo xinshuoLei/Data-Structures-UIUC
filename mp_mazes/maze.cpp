@@ -21,7 +21,6 @@ void SquareMaze::makeMaze(int width, int height) {
     // disjoint set for cycle detection
     DisjointSets d;
     d.addelements(width * height);
-
     // break walls until all cells are connected
     int num_sets = width * height;
     while (num_sets != 1) {
@@ -30,19 +29,19 @@ void SquareMaze::makeMaze(int width, int height) {
         int random_wall = rand() % 2;
         // if wall exists
         if (walls[random_x][random_y][random_wall]) {
-            int cell = random_x * height + random_y; 
+            int cell = random_x + random_y * width; 
             // if random wall is the right wall of the cell
             if (random_wall == 0 && random_x < width - 1) {
                 // check cycle
-                if (d.find(cell) != d.find(cell + height)) {
-                    d.setunion(cell, cell + height);
+                if (d.find(cell) != d.find(cell + 1)) {
+                    d.setunion(cell, cell + 1);
                     num_sets--;
                     walls[random_x][random_y][random_wall] = false;
                 }
             } else if (random_wall == 1 && random_y < height - 1) {
                 // if random wall is the bottom wall
-                if (d.find(cell) != d.find(cell + 1)) {
-                    d.setunion(cell, cell + 1);
+                if (d.find(cell) != d.find(cell + width)) {
+                    d.setunion(cell, cell + width);
                     num_sets--;
                     walls[random_x][random_y][random_wall] = false;
                 }
@@ -102,53 +101,61 @@ std::vector<int> SquareMaze::solveMaze() {
     while (!q.empty()) {
         int index = q.front();
         q.pop();
-        // index = x * height + y;
-        int y = index % height_;
-        int x = (index - y) / height_;
+        // index = x + y * width;
+        int x = index % width_;
+        int y = (index - x) / width_;
         // if neighbors not visited
         // dir = 0 represents a rightward step (+1 to the x coordinate)
         // dir = 1 represents a downward step (+1 to the y coordinate)
         // dir = 2 represents a leftward step (-1 to the x coordinate)
         // dir = 3 represents an upward step (-1 to the y coordinate)
-        if (canTravel(x, y, 0) && prev[index + height_] == -1) {
-            q.push(index + height_);
-            prev[index + height_] = index;
-            distance[index + height_] = distance[index] + 1;
-        }
-        if (canTravel(x, y, 1) && prev[index + 1] == -1) {
+        if (canTravel(x, y, 0) && prev[index + 1] == -1) {
             q.push(index + 1);
             prev[index + 1] = index;
             distance[index + 1] = distance[index] + 1;
         }
-        if (canTravel(x, y, 2) && prev[index - height_] == -1) {
-            q.push(index - height_);
-            prev[index - height_] = index;
-            distance[index - height_] = distance[index] + 1;
+        if (canTravel(x, y, 1) && prev[index + width_] == -1) {
+            q.push(index + width_);
+            prev[index + width_] = index;
+            distance[index + width_] = distance[index] + 1;
         }
-        if (canTravel(x, y, 3) && prev[index - 1] == -1) {
+        if (canTravel(x, y, 2) && prev[index - 1] == -1) {
             q.push(index - 1);
             prev[index - 1] = index;
-            distance[index - 1] = distance[index] - 1;
+            distance[index - 1] = distance[index] + 1;
+        }
+        if (canTravel(x, y, 3) && prev[index - width_] == -1) {
+            q.push(index - width_);
+            prev[index - width_] = index;
+            distance[index - width_] = distance[index] - 1;
         }
     }
     // compare all distances in the last row to find exit
     int exit = width_ * height_ - 1;
-    for (int j = height_ - 1; j < width_ * height_ - 1; j += height_) {
+    for (int j = (height_ - 1) * width_; j < width_ * height_ - 1; j ++) {
         if (distance[j] > distance[exit]) {
             exit = j;
+        } else if (distance[j] == distance[exit]) {
+            int exit_x_ = exit % width_;
+            int current_x = j % width_;
+            // If multiple paths of maximum length exist, 
+            // use the one with the destination cell that has the smallest x value.
+            if (current_x < exit_x_) {
+                exit = j;
+            } 
         }
     }
-    exit_y = exit % height_;
-    exit_x = (exit - exit_y) / height_;
+    exit_x = exit % width_;
+    exit_y = (exit - exit_x) / width_;
     // backtrack to get solution
     std::vector<int> solution;
     int current = exit;
     while (current != 0) {
-        if (prev[current] == current - height_) {
+        if (prev[current] == current - 1) {
             solution.push_back(0);
-        } else if (prev[current] == current - 1) {
+        } else if (prev[current] == current - width_) {
             solution.push_back(1);
-        } else if (prev[current] == current + height_) {
+        } else if (prev[current] == current + 1) {
             solution.push_back(2);
         } else {
             solution.push_back(3);
