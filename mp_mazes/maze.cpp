@@ -1,5 +1,7 @@
 /* Your code here! */
 #include <stdlib.h>
+#include <queue>
+#include <algorithm>
 #include "maze.h"
 
 void SquareMaze::makeMaze(int width, int height) { 
@@ -86,7 +88,75 @@ void SquareMaze::setWall(int x, int y, int dir, bool exists) {
 }
 
 std::vector<int> SquareMaze::solveMaze() {
-    return std::vector<int>();
+    std::queue<int> q;
+    std::vector<int> prev = std::vector<int>(width_ * height_);
+    std::vector<int> distance = std::vector<int>(width_ * height_);
+    for (int i = 0; i < width_ * height_; i++) {
+        // use -1 to indicate not visited
+        prev[i] = -1; 
+        distance[i] = 0;
+    }
+    // start bfs by visiting (0,0) 
+    q.push(0);
+    prev[0] = 0;
+    while (!q.empty()) {
+        int index = q.front();
+        q.pop();
+        // index = x * height + y;
+        int y = index % height_;
+        int x = (index - y) / height_;
+        // if neighbors not visited
+        // dir = 0 represents a rightward step (+1 to the x coordinate)
+        // dir = 1 represents a downward step (+1 to the y coordinate)
+        // dir = 2 represents a leftward step (-1 to the x coordinate)
+        // dir = 3 represents an upward step (-1 to the y coordinate)
+        if (canTravel(x, y, 0) && prev[index + height_] == -1) {
+            q.push(index + height_);
+            prev[index + height_] = index;
+            distance[index + height_] = distance[index] + 1;
+        }
+        if (canTravel(x, y, 1) && prev[index + 1] == -1) {
+            q.push(index + 1);
+            prev[index + 1] = index;
+            distance[index + 1] = distance[index] + 1;
+        }
+        if (canTravel(x, y, 2) && prev[index - height_] == -1) {
+            q.push(index - height_);
+            prev[index - height_] = index;
+            distance[index - height_] = distance[index] + 1;
+        }
+        if (canTravel(x, y, 3) && prev[index - 1] == -1) {
+            q.push(index - 1);
+            prev[index - 1] = index;
+            distance[index - 1] = distance[index] - 1;
+        }
+    }
+    // compare all distances in the last row to find exit
+    int exit = width_ * height_ - 1;
+    for (int j = height_ - 1; j < width_ * height_ - 1; j += height_) {
+        if (distance[j] > distance[exit]) {
+            exit = j;
+        }
+    }
+    exit_y = exit % height_;
+    exit_x = (exit - exit_y) / height_;
+    // backtrack to get solution
+    std::vector<int> solution;
+    int current = exit;
+    while (current != 0) {
+        if (prev[current] == current - height_) {
+            solution.push_back(0);
+        } else if (prev[current] == current - 1) {
+            solution.push_back(1);
+        } else if (prev[current] == current + height_) {
+            solution.push_back(2);
+        } else {
+            solution.push_back(3);
+        }
+        current = prev[current];
+    }
+    std::reverse(solution.begin(), solution.end());
+    return solution;
 }
 
 cs225::PNG* SquareMaze::drawMaze() const {
@@ -124,5 +194,58 @@ cs225::PNG* SquareMaze::drawMaze() const {
 }
 
 cs225::PNG* SquareMaze::drawMazeWithSolution() {
-    return NULL;
+    cs225::PNG* maze = drawMaze();
+    std::vector<int> solution = solveMaze();
+    cs225::HSLAPixel red = cs225::HSLAPixel(0, 1, 0.5, 1);
+    int x = 5;
+    int y = 5;
+    /**
+     * Start at pixel (5,5). Each direction in the solution vector corresponds to a trail 
+     * of 11 red pixels in the given direction. If the first step is downward, color pixels 
+     * (5,5) through (5,15) red. (Red is 0,1,0.5,1 in HSLA). Then if the second step is right, 
+     * color pixels (5,15) through (15,15) red. Then if the third step is up, color pixels 
+     * (15,15) through (15,5) red. Continue in this manner until you get to the end of 
+     * the solution vector
+     * dir = 0 represents a rightward step (+1 to the x coordinate)
+     * dir = 1 represents a downward step (+1 to the y coordinate)
+     * dir = 2 represents a leftward step (-1 to the x coordinate)
+     * dir = 3 represents an upward step (-1 to the y coordinate)
+     */
+    for (size_t i = 0; i < solution.size(); i++) {
+        if (solution[i] == 0) {
+            for (int k = x; k <= x + 10; k++) {
+                cs225::HSLAPixel& pixel1 = maze -> getPixel(k, y);
+                pixel1 = cs225::HSLAPixel(red);
+            }
+            x += 10;
+        } else if (solution[i] == 1) {
+            for (int k1 = y; k1 <= y + 10; k1++) {
+                cs225::HSLAPixel& pixel3 = maze -> getPixel(x, k1);
+                pixel3 = cs225::HSLAPixel(red);
+            }
+            y += 10;
+        } else if (solution[i] == 2) {
+            for (int k2 = x; k2 >= x - 10; k2--) {
+                cs225::HSLAPixel& pixel3 = maze -> getPixel(k2, y);
+                pixel3 = cs225::HSLAPixel(red);
+            }
+            x -= 10;
+        } else {
+            for (int k3 = y; k3 >= y - 10; k3--) {
+                cs225::HSLAPixel& pixel4 = maze -> getPixel(x, k3);
+                pixel4 = cs225::HSLAPixel(red);
+            }
+            y -= 10;
+        }
+    }
+    /**
+     * Make the exit by undoing the bottom wall of the destination square: call the 
+     * destination maze coordinates (x,y), and whiten the pixels with coordinates 
+     * (x*10+k, (y+1)*10) for k from 1 to 9.
+     */
+    for (int k4 = 1; k4 <= 9; k4++) {
+        cs225::HSLAPixel& pixel5 = maze -> getPixel(exit_x * 10 + k4, (exit_y + 1) * 10);
+        pixel5.l = 1;
+    }
+    return maze;
 }

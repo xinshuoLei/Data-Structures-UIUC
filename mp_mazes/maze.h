@@ -21,4 +21,6 @@ class SquareMaze {
         std::vector<std::vector<std::vector<bool>>> walls;
         int width_;
         int height_;
+        int exit_x;
+        int exit_y;
 };
