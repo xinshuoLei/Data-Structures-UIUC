@@ -20,8 +20,21 @@ int min(int a, int b) {
 
 NetworkFlow::NetworkFlow(Graph & startingGraph, Vertex source, Vertex sink) :
   g_(startingGraph), residual_(Graph(true,true)), flow_(Graph(true,true)), source_(source), sink_(sink) {
-
   // YOUR CODE HERE
+  for (auto& v : g_.getVertices()) {
+    residual_.insertVertex(v);
+    flow_.insertVertex(v);
+  }
+  for (auto& e : g_.getEdges()) {
+    residual_.insertEdge(e.source, e.dest);
+    residual_.setEdgeWeight(e.source, e.dest, e.getWeight());
+    // reverse edges
+    residual_.insertEdge(e.dest, e.source);
+    residual_.setEdgeWeight(e.dest, e.source, 0);
+
+    flow_.insertEdge(e.source, e.dest);
+    flow_.setEdgeWeight(e.source, e.dest, 0);
+  }
 }
 
   /**
@@ -84,7 +97,14 @@ bool NetworkFlow::findAugmentingPath(Vertex source, Vertex sink, std::vector<Ver
 
 int NetworkFlow::pathCapacity(const std::vector<Vertex> & path) const {
   // YOUR CODE HERE
-  return 0;
+  int capacity = residual_.getEdgeWeight(path[0], path[1]);
+  
+  for (unsigned i = 0; i < path.size() -1; i++) {
+    if (residual_.getEdgeWeight(path[i], path[i+1]) < capacity) {
+      capacity = residual_.getEdgeWeight(path[i], path[i+1]); 
+    }
+  }
+  return capacity;
 }
 
   /**
@@ -97,6 +117,27 @@ int NetworkFlow::pathCapacity(const std::vector<Vertex> & path) const {
 
 const Graph & NetworkFlow::calculateFlow() {
   // YOUR CODE HERE
+  vector<Vertex> path;
+  maxFlow_ = 0;
+  while(findAugmentingPath(source_, sink_, path)){
+    int capacity = pathCapacity(path);
+    maxFlow_ += capacity;
+    int weight = 0;
+    for (unsigned i = 0; i < path.size() - 1; i++) {
+      if (flow_.edgeExists(path[i], path[i+1])) {
+        weight =  flow_.getEdgeWeight(path[i], path[i+1]);
+        flow_.setEdgeWeight(path[i], path[i+1], weight + capacity);
+      } else {
+        weight =  flow_.getEdgeWeight(path[i+1], path[i]);
+        flow_.setEdgeWeight(path[i+1], path[i], weight - capacity);
+      }
+      weight = residual_.getEdgeWeight(path[i], path[i+1]);
+      residual_.setEdgeWeight(path[i], path[i+1], weight - capacity);
+      weight = residual_.getEdgeWeight(path[i+1], path[i]);
+      residual_.setEdgeWeight(path[i+1], path[i], weight + capacity);
+    }
+  }
+  
   return flow_;
 }
 
